@@ -67,38 +67,6 @@ def generate_data(count=15):
     return documents
 
 
-def fix_layout(path):
-    document = Document(path)
-    section = document.sections[0]
-    section.orientation = WD_ORIENT.LANDSCAPE
-    section.page_width = Mm(297)
-    section.page_height = Mm(210)
-    section.left_margin = Mm(20)
-    section.right_margin = Mm(20)
-    section.top_margin = Mm(15)
-    section.bottom_margin = Mm(30)
-
-    table_widths = (
-        [Mm(85), Mm(85), Mm(87)],
-        [Mm(105), Mm(32), Mm(24), Mm(22), Mm(34), Mm(40)],
-    )
-    for table, column_widths in zip(document.tables, table_widths):
-        table.autofit = False
-        for column, width in zip(table.columns, column_widths):
-            column.width = width
-            for cell in column.cells:
-                cell.width = width
-                cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
-
-    date_paragraph = document.tables[0].cell(0, 2).paragraphs[0]
-    for index, run in enumerate(date_paragraph.runs):
-        if run.text == "20 ":
-            date_paragraph.runs[index - 1].text += " "
-            run.text = "20"
-
-    document.save(path)
-
-
 def main():
     output_dir = Path("checks/1")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -122,7 +90,6 @@ def main():
         )
         output_path = output_dir / f"check_{index}.docx"
         document.save(output_path)
-        fix_layout(output_path)
 
 
 if __name__ == "__main__":
